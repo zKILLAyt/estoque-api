@@ -58,7 +58,32 @@ const createProduct = (req, res) => {
   );
 };
 
+const getProductById = (req, res) => {
+  const { id } = req.params;
+
+  connection.query(
+    "SELECT * FROM products WHERE id = ?",
+    [id],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({
+          message: "Produto não encontrado",
+        });
+      }
+
+      res.json(results[0]);
+    }
+  );
+};
+
 module.exports = {
   getProducts,
   createProduct,
+  getProductById,
 };
