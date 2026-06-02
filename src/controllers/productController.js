@@ -14,8 +14,6 @@ const getProducts = (req, res) => {
 };
 
 const createProduct = (req, res) => {
-  console.log(req.body);
-
   const {
     name,
     sku,
@@ -24,7 +22,13 @@ const createProduct = (req, res) => {
     price,
     category_id,
     supplier_id
-  } = req.body;
+  } = req.body || {};
+
+  if (!name || !sku || quantity === undefined || min_quantity === undefined || !price || !category_id || !supplier_id) {
+    return res.status(400).json({
+      message: "Todos os campos obrigatorios devem ser informados",
+    });
+  }
 
   const sql = `
     INSERT INTO products
@@ -93,7 +97,13 @@ const updateProduct = (req, res) => {
     price,
     category_id,
     supplier_id
-  } = req.body;
+  } = req.body || {};
+
+  if (!name || !sku || quantity === undefined || min_quantity === undefined || !price || !category_id || !supplier_id) {
+    return res.status(400).json({
+      message: "Todos os campos obrigatorios devem ser informados",
+    });
+  }
 
   const sql = `
     UPDATE products

@@ -9,13 +9,13 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-router.get("/", getProducts);
-router.get("/:id", getProductById);
+const roleMiddleware = require("../middlewares/roleMiddleware");
 
-router.post("/", createProduct);
+router.get("/", roleMiddleware("admin", "operator"), getProducts);
+router.get("/:id", roleMiddleware("admin", "operator"), getProductById);
 
-router.put("/:id", updateProduct); 
-
-router.delete("/:id", deleteProduct);
+router.post("/", roleMiddleware("admin"), createProduct);
+router.put("/:id", roleMiddleware("admin"), updateProduct);
+router.delete("/:id", roleMiddleware("admin"), deleteProduct);
 
 module.exports = router;

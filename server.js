@@ -6,6 +6,9 @@ const cors = require("cors");
 const productRoutes = require("./src/routes/productRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const movementRoutes = require("./src/routes/movementRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+
+const authMiddleware = require("./src/middlewares/authMiddleware");
 
 const app = express();
 
@@ -14,9 +17,12 @@ app.use(express.json());
 
 require("./src/database/connection");
 
-app.use("/products", productRoutes);
-app.use("/dashboard", dashboardRoutes);
-app.use("/movements", movementRoutes);
+app.use("/auth", authRoutes);
+
+app.use("/products", authMiddleware, productRoutes);
+app.use("/dashboard", authMiddleware, dashboardRoutes);
+app.use("/movements", authMiddleware, movementRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({

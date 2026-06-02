@@ -5,6 +5,8 @@ const {
   getDashboard,
 } = require("../controllers/dashboardController");
 
-router.get("/", getDashboard);
+const roleMiddleware = require("../middlewares/roleMiddleware");
+
+router.get("/", roleMiddleware("admin", "operator"), getDashboard);
 
 module.exports = router;

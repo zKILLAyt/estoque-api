@@ -1,5 +1,73 @@
 const connection = require("../database/connection");
 
+const getMovements = (req, res) => {
+  const sql = `
+    SELECT
+      movements.id,
+      movements.product_id,
+      products.name AS product_name,
+      products.sku AS product_sku,
+      movements.user_id,
+      users.name AS user_name,
+      movements.movement_type,
+      movements.quantity,
+      movements.observation,
+      movements.created_at
+    FROM movements
+    INNER JOIN products ON movements.product_id = products.id
+    INNER JOIN users ON movements.user_id = users.id
+    ORDER BY movements.created_at DESC
+  `;
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+
+    res.json(results);
+  });
+};
+
+const getMovementById = (req, res) => {
+  const { id } = req.params;
+
+  const sql = `
+    SELECT
+      movements.id,
+      movements.product_id,
+      products.name AS product_name,
+      products.sku AS product_sku,
+      movements.user_id,
+      users.name AS user_name,
+      movements.movement_type,
+      movements.quantity,
+      movements.observation,
+      movements.created_at
+    FROM movements
+    INNER JOIN products ON movements.product_id = products.id
+    INNER JOIN users ON movements.user_id = users.id
+    WHERE movements.id = ?
+  `;
+
+  connection.query(sql, [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        message: "Movimentacao nao encontrada",
+      });
+    }
+
+    res.json(results[0]);
+  });
+};
+
 const createMovement = (req, res) => {
   const {
     product_id,
@@ -7,7 +75,19 @@ const createMovement = (req, res) => {
     movement_type,
     quantity,
     observation
-  } = req.body;
+  } = req.body || {};
+
+  if (!product_id || !user_id || !movement_type || !quantity) {
+    return res.status(400).json({
+      message: "Produto, usuario, tipo de movimentacao e quantidade sao obrigatorios",
+    });
+  }
+
+  if (!["entrada", "saida"].includes(movement_type)) {
+    return res.status(400).json({
+      message: "Tipo de movimentacao invalido",
+    });
+  }
 
   connection.query(
     "SELECT * FROM products WHERE id = ?",
@@ -19,7 +99,7 @@ const createMovement = (req, res) => {
 
       if (products.length === 0) {
         return res.status(404).json({
-          message: "Produto não encontrado"
+          message: "Produto nao encontrado"
         });
       }
 
@@ -71,7 +151,7 @@ const createMovement = (req, res) => {
               }
 
               res.status(201).json({
-                message: "Movimentação registrada com sucesso!",
+                message: "Movimentacao registrada com sucesso!",
                 movementId: result.insertId,
                 newQuantity
               });
@@ -84,5 +164,7 @@ const createMovement = (req, res) => {
 };
 
 module.exports = {
+  getMovements,
+  getMovementById,
   createMovement,
 };
