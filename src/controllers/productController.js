@@ -82,8 +82,94 @@ const getProductById = (req, res) => {
   );
 };
 
+const updateProduct = (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    sku,
+    quantity,
+    min_quantity,
+    price,
+    category_id,
+    supplier_id
+  } = req.body;
+
+  const sql = `
+    UPDATE products
+    SET
+      name = ?,
+      sku = ?,
+      quantity = ?,
+      min_quantity = ?,
+      price = ?,
+      category_id = ?,
+      supplier_id = ?
+    WHERE id = ?
+  `;
+
+  connection.query(
+    sql,
+    [
+      name,
+      sku,
+      quantity,
+      min_quantity,
+      price,
+      category_id,
+      supplier_id,
+      id
+    ],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          message: "Produto não encontrado",
+        });
+      }
+
+      res.json({
+        message: "Produto atualizado com sucesso!",
+      });
+    }
+  );
+};
+
+const deleteProduct = (req, res) => {
+  const { id } = req.params;
+
+  connection.query(
+    "DELETE FROM products WHERE id = ?",
+    [id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          message: "Produto não encontrado",
+        });
+      }
+
+      res.json({
+        message: "Produto removido com sucesso!",
+      });
+    }
+  );
+};
+
 module.exports = {
   getProducts,
   createProduct,
   getProductById,
+  updateProduct,
+  deleteProduct,
 };
