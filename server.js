@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const productRoutes = require("./src/routes/productRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
+const movementRoutes = require("./src/routes/movementRoutes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ require("./src/database/connection");
 
 app.use("/products", productRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/movements", movementRoutes);
 
 app.get("/", (req, res) => {
   res.json({
