@@ -4,12 +4,7 @@ const jwt = require("jsonwebtoken");
 const connection = require("../database/connection");
 
 const register = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    role
-  } = req.body;
+  const { name, email, password, role } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({
@@ -41,29 +36,31 @@ const register = async (req, res) => {
       VALUES (?, ?, ?, ?)
     `;
 
-    connection.query(
-      sql,
-      [name, email, hashedPassword, userRole],
-      (err, result) => {
-        if (err) {
-          if (err.code === "ER_DUP_ENTRY") {
-            return res.status(400).json({
-              message: "Email ja cadastrado",
-            });
-          }
+    connection.query(sql, [name, email, hashedPassword, userRole], (err, result) => {
+      if (err) {
+        console.error("ERRO MYSQL REGISTER:", err);
 
-          return res.status(500).json({
-            error: err.message,
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(400).json({
+            message: "Email ja cadastrado",
           });
         }
 
-        res.status(201).json({
-          message: "Usuario cadastrado com sucesso!",
-          userId: result.insertId,
+        return res.status(500).json({
+          error: err.message,
+          code: err.code,
+          sqlMessage: err.sqlMessage,
         });
       }
-    );
+
+      res.status(201).json({
+        message: "Usuario cadastrado com sucesso!",
+        userId: result.insertId,
+      });
+    });
   } catch (err) {
+    console.error("ERRO REGISTER:", err);
+
     res.status(500).json({
       error: err.message,
     });
@@ -71,10 +68,7 @@ const register = async (req, res) => {
 };
 
 const login = (req, res) => {
-  const {
-    email,
-    password
-  } = req.body;
+  const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -87,8 +81,12 @@ const login = (req, res) => {
     [email],
     async (err, results) => {
       if (err) {
+        console.error("ERRO MYSQL LOGIN:", err);
+
         return res.status(500).json({
           error: err.message,
+          code: err.code,
+          sqlMessage: err.sqlMessage,
         });
       }
 
