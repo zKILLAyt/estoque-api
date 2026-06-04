@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import "./styles.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL;
 
 const initialProductForm = {
   name: "",
