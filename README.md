@@ -10,6 +10,8 @@ O projeto foi criado como parte de um portfolio Full Stack, com foco em aprendiz
 - Express
 - MySQL
 - mysql2
+- bcryptjs
+- jsonwebtoken
 - dotenv
 - cors
 - Git/GitHub
@@ -22,6 +24,8 @@ O projeto foi criado como parte de um portfolio Full Stack, com foco em aprendiz
 - Entrada de estoque
 - Saida de estoque
 - Registro de historico de movimentacoes
+- Autenticacao JWT
+- Controle de acesso por roles
 - Integracao com MySQL
 - API REST com Express
 
@@ -63,6 +67,28 @@ Tabelas principais:
 - `suppliers`
 - `users`
 - `movements`
+
+## Autenticacao
+
+O projeto possui autenticacao com JWT.
+
+Rotas:
+
+| Metodo | Rota | Descricao |
+| --- | --- | --- |
+| POST | `/auth/register` | Cadastra um usuario |
+| POST | `/auth/login` | Realiza login e retorna token JWT |
+
+As rotas protegidas devem receber o token no header:
+
+```http
+Authorization: Bearer seu_token
+```
+
+Roles:
+
+- `admin`: pode criar, editar e excluir produtos.
+- `operator`: pode consultar dados e registrar movimentacoes.
 
 ## Instalacao
 
@@ -241,9 +267,11 @@ Exemplo de saida:
 
 ## Proximos Passos
 
-- Implementar autenticacao com JWT
-- Adicionar controle de acesso por roles (`admin` e `operator`)
-- Desenvolver front-end com React e Vite
+- Melhorar feedback visual de sucesso e erro
+- Criar tela de cadastro de usuarios no front-end
+- Criar telas de categorias e fornecedores
+- Adicionar filtros e busca
+- Fazer deploy com banco MySQL online
 
 ## Status
 
@@ -258,6 +286,9 @@ Funcionalidades concluidas:
 - Registro de movimentacoes
 - Listagem de historico de movimentacoes
 - Busca de movimentacao por ID
+- Autenticacao JWT
+- Controle de acesso por roles
+- Front-end React integrado
 - Integracao com MySQL
 
 ## Autor
